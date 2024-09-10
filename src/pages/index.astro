@@ -1,213 +1,252 @@
 ---
-import Component from "../components/Component.astro";
-import Experience from "../components/experience/index.astro";
-import { EXPERIENCE } from "../data/experience";
-import { SOCIALS } from "../data/socials";
-import Layout from "../layouts/Layout.astro";
+import { getCollection } from 'astro:content';
+
+// Layout import — provides basic page elements: <head>, <nav>, <footer> etc.
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Component Imports
+import CallToAction from '../components/CallToAction.astro';
+import Grid from '../components/Grid.astro';
+import Hero from '../components/Hero.astro';
+import Icon from '../components/Icon.astro';
+import Pill from '../components/Pill.astro';
+import PortfolioPreview from '../components/PortfolioPreview.astro';
+
+// Page section components
+import ContactCTA from '../components/ContactCTA.astro';
+import Skills from '../components/Skills.astro';
+
+// Content Fetching: List four most recent work projects
+const projects = (await getCollection('work'))
+	.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
+	.slice(0, 4);
+
+// Full Astro Component Syntax:
+// https://docs.astro.build/basics/astro-components/
 ---
 
-<Layout title="Hunter Zhang">
-  <div class="relative hero z-10">
-    <div
-      class="mx-auto min-h-screen max-w-screen-2xl px-6 py-12 font-sans md:px-12 md:py-20 lg:px-24 lg:py-0"
-    >
-      <div class="lg:flex lg:justify-between lg:gap-4">
-        <header
-          class="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-1/2 lg:flex-col lg:justify-between lg:py-24"
-        >
-          <div
-            class="flex lg:items-start gap-4 flex-col lg:flex-row items-center text-center lg:text-left"
-          >
-          <img src="/avatar.png" alt="Hunter Zhang" class="w-20 h-20 object-cover" />
+<BaseLayout>
+	<div class="stack gap-20 lg:gap-48">
+		<div class="wrapper stack gap-8 lg:gap-20">
+			<header class="hero">
+				<Hero
+					title="Hello, my name is Jeanine White"
+					tagline="I am a Creative Developer who is currently based in Portland, Oregon."
+					align="start"
+				>
+					<div class="roles">
+						<Pill><Icon icon="code" size="1.33em" /> Developer</Pill>
+						<Pill><Icon icon="microphone-stage" size="1.33em" /> Speaker</Pill>
+						<Pill><Icon icon="pencil-line" size="1.33em" /> Writer</Pill>
+					</div>
+				</Hero>
 
-            <div>
-              <a
-                href="/"
-                class="text-4xl lg:text-5xl block font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50"
-              >
-                <h1>Hunter Zhang</h1>
-              </a>
-              <h2 class="mt-2 text-sm lg:text-lg font-medium text-neutral-400">
-                Customer-centric builder, innovator, and reseacher
-              </h2>
+				<img
+					alt="Jeanine White smiling in a red plaid shirt and tortoise shell glasses"
+					width="480"
+					height="620"
+					src="/assets/portrait.jpg"
+				/>
+			</header>
 
-              <a
-                data-ccursor
-                href="mailto:rusinvadym@gmail.com"
-                class="inline-flex transition-all border-neutral-700 hover:border-opacity-0 border-opacity-50 shadow rounded-md border backdrop-blur-xl bg-neutral-400/10 px-3 py-2.5 items-center text-white font-semibold group p-2 text-sm gap-x-2 mt-4"
-              >
-                <span>Email me</span>
-                <sapn
-                  class="w-2 h-2 rounded-full bg-green-400 duration-1000 animate-pulse"
-                >
-                </sapn>
-              </a>
-            </div>
-          </div>
+			<Skills />
+		</div>
 
-          {
-            SOCIALS.length && (
-              <ul
-                class="mt-8 flex items-center justify-center lg:justify-normal gap-x-5"
-                aria-label="Social media"
-              >
-                {SOCIALS.map((social) => (
-                  <li class="text-xs p-2 rounded" data-ccursor>
-                    <a
-                      class="block hover:text-slate-200"
-                      href={social.url}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      aria-label={`${social.name} (opens in a new tab)`}
-                    >
-                      <span class="sr-only">{social.name}</span>
-                      {<Component component={social.icon} />}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )
-          }
-        </header>
+		<main class="wrapper stack gap-20 lg:gap-48">
+			<section class="section with-background with-cta">
+				<header class="section-header stack gap-2 lg:gap-4">
+					<h3>Selected Work</h3>
+					<p>Take a look below at some of my featured work for clients from the past few years.</p>
+				</header>
 
-        <main id="content" class="pt-24 lg:w-1/2 lg:py-24">
-          <section
-            id="about"
-            class="mb-16 scroll-mt-16 md:mb-24 lg:mb-36 lg:scroll-mt-24"
-            aria-label="About me"
-          >
-            <div
-              class="sticky top-0 z-20 -mx-6 mb-4 w-screen px-6 py-3 backdrop-blur-lg md:-mx-12 md:px-12 lg:sr-only lg:relative lg:top-auto lg:mx-auto lg:w-full lg:px-0 lg:py-0 lg:opacity-0"
-            >
-              <h2
-                class="text-sm font-bold uppercase tracking-widest text-neutral-200 lg:sr-only"
-              >
-                About
-              </h2>
-            </div>
-            <div>
-              <div class="mb-4 space-y-4">
-                <p>
-                  In my current role as a Full Stack Engineer at Dutch Pet
-                  (Remote), I am at the forefront of designing and architecting
-                  dutch.com, leveraging a powerful stack including Shopify
-                  Storefront API, Admin API, Vue.JS, Node.JS, Liquid, Alpine.js,
-                  and Tailwind. My expertise extends to integrating with the
-                  ReCharge subscription system and collaborating closely with
-                  designers to ensure pixel-perfect layouts and user flows.
-                </p>
+				<div class="gallery">
+					<Grid variant="offset">
+						{
+							projects.map((project) => (
+								<li>
+									<PortfolioPreview project={project} />
+								</li>
+							))
+						}
+					</Grid>
+				</div>
 
-                <p>
-                  Looking forward to new challenges and exciting collaborations!
-                </p>
-              </div>
-            </div>
-          </section>
-          <section
-            id="experience"
-            class="mb-16 scroll-mt-16 md:mb-24 lg:mb-36 lg:scroll-mt-24"
-            aria-label="Work experience"
-          >
-            <div
-              class="sticky top-0 z-20 -mx-6 mb-4 w-screen px-6 py-3 backdrop-blur-lg md:-mx-12 md:px-12 lg:sr-only lg:relative lg:top-auto lg:mx-auto lg:w-full lg:px-0 lg:py-0 lg:opacity-0"
-            >
-              <h2
-                class="text-sm font-bold uppercase tracking-widest text-neutral-200 lg:sr-only"
-              >
-                Experience
-              </h2>
-            </div><div>
-              <ol class="group/list space-y-12">
-                {EXPERIENCE.map((experience) => <Experience {...experience} />)}
-              </ol>
+				<div class="cta">
+					<CallToAction href="/work/">
+						View All
+						<Icon icon="arrow-right" size="1.2em" />
+					</CallToAction>
+				</div>
+			</section>
 
-              <div class="mt-12">
-                <a
-                  data-ccursor
-                  class="inline-flex items-center leading-tight text-neutral-200 font-semibold group p-2 rounded px-3"
-                  aria-label="View Full Résumé"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  href="./resume.pdf"
-                >
-                  <span>
-                    <span
-                      class="border-b border-transparent pb-px transition group-hover:border-neutral-300 motion-reduce:transition-none"
-                    >
-                      View Full
-                    </span>
-                    <span class="whitespace-nowrap">
-                      <span
-                        class="border-b border-transparent pb-px transition group-hover:border-neutral-300 motion-reduce:transition-none"
-                      >
-                        Résumé
-                      </span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        class="ml-1 inline-block h-4 w-4 shrink-0 -translate-y-px transition-transform group-hover:translate-x-2 group-focus-visible:translate-x-2 motion-reduce:transition-none"
-                        aria-hidden="true"
-                        ><path
-                          fill-rule="evenodd"
-                          d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-                          clip-rule="evenodd"></path></svg
-                      ></span
-                    ></span
-                  ></a
-                >
-              </div>
-            </div>
-          </section>
-          <footer class="max-w-md pb-16 text-sm text-neutral-500 sm:pb-0">
-            <p>
-              Designed in
-              <a
-                href="https://www.figma.com/"
-                class="font-medium text-neutral-400 hover:text-red-300 focus-visible:text-red-300 hover:underline"
-                target="_blank"
-                rel="noreferrer">Figma</a
-              >
-              and coded in
-              <a
-                href="https://code.visualstudio.com/"
-                class="font-medium text-neutral-400 hover:text-red-300 focus-visible:text-red-300 hover:underline"
-                target="_blank"
-                rel="noreferrer">Visual Studio Code</a
-              >
-            </p>
-          </footer>
-        </main>
-      </div>
-    </div>
-  </div>
+			<section class="section with-background bg-variant">
+				<header class="section-header stack gap-2 lg:gap-4">
+					<h3>Mentions</h3>
+					<p>
+						I have been fortunate enough to receive praise for my work in several publications. Take
+						a look below to learn more.
+					</p>
+				</header>
 
-  <footer class="text-center py-4 text-xs">
-    {new Date().getFullYear()} All rights reserved.
-  </footer>
-</Layout>
+				<div class="gallery">
+					<Grid variant="small">
+						{
+							['Medium', 'BuzzFeed', 'The Next Web', 'awwwards.', 'TechCrunch'].map((brand) => (
+								<li class="mention-card">
+									<p>{brand}</p>
+								</li>
+							))
+						}
+					</Grid>
+				</div>
+			</section>
+		</main>
 
-<style scoped>
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
+		<ContactCTA />
+	</div>
+</BaseLayout>
 
-  .hero {
-    background-image: url(/pattern.svg);
-    background-position: top center;
-    background-repeat: no-repeat;
-    overflow-y: visible;
-    overflow-x: clip;
-  }
+<style>
+	.hero {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2rem;
+	}
 
-  /*
-  .hero {
-    animation: fadeIn 3s;
-  }
-   */
+	.roles {
+		display: none;
+	}
+
+	.hero img {
+		aspect-ratio: 5 / 4;
+		object-fit: cover;
+		object-position: top;
+		border-radius: 1.5rem;
+		box-shadow: var(--shadow-md);
+	}
+
+	@media (min-width: 50em) {
+		.hero {
+			display: grid;
+			grid-template-columns: 6fr 4fr;
+			padding-inline: 2.5rem;
+			gap: 3.75rem;
+		}
+
+		.roles {
+			margin-top: 0.5rem;
+			display: flex;
+			gap: 0.5rem;
+		}
+
+		.hero img {
+			aspect-ratio: 3 / 4;
+			border-radius: 4.5rem;
+			object-fit: cover;
+		}
+	}
+
+	/* ====================================================== */
+
+	.section {
+		display: grid;
+		gap: 2rem;
+	}
+
+	.with-background {
+		position: relative;
+	}
+
+	.with-background::before {
+		--hero-bg: var(--bg-image-subtle-2);
+
+		content: '';
+		position: absolute;
+		pointer-events: none;
+		left: 50%;
+		width: 100vw;
+		aspect-ratio: calc(2.25 / var(--bg-scale));
+		top: 0;
+		transform: translateY(-75%) translateX(-50%);
+		background:
+			url('/assets/backgrounds/noise.png') top center/220px repeat,
+			var(--hero-bg) center center / var(--bg-gradient-size) no-repeat,
+			var(--gray-999);
+		background-blend-mode: overlay, normal, normal, normal;
+		mix-blend-mode: var(--bg-blend-mode);
+		z-index: -1;
+	}
+
+	.with-background.bg-variant::before {
+		--hero-bg: var(--bg-image-subtle-1);
+	}
+
+	.section-header {
+		justify-self: center;
+		text-align: center;
+		max-width: 50ch;
+		font-size: var(--text-md);
+		color: var(--gray-300);
+	}
+
+	.section-header h3 {
+		font-size: var(--text-2xl);
+	}
+
+	@media (min-width: 50em) {
+		.section {
+			grid-template-columns: repeat(4, 1fr);
+			grid-template-areas: 'header header header header' 'gallery gallery gallery gallery';
+			gap: 5rem;
+		}
+
+		.section.with-cta {
+			grid-template-areas: 'header header header cta' 'gallery gallery gallery gallery';
+		}
+
+		.section-header {
+			grid-area: header;
+			font-size: var(--text-lg);
+		}
+
+		.section-header h3 {
+			font-size: var(--text-4xl);
+		}
+
+		.with-cta .section-header {
+			justify-self: flex-start;
+			text-align: left;
+		}
+
+		.gallery {
+			grid-area: gallery;
+		}
+
+		.cta {
+			grid-area: cta;
+		}
+	}
+
+	/* ====================================================== */
+
+	.mention-card {
+		display: flex;
+		height: 7rem;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		border: 1px solid var(--gray-800);
+		border-radius: 1.5rem;
+		color: var(--gray-300);
+		background: var(--gradient-subtle);
+		box-shadow: var(--shadow-sm);
+	}
+
+	@media (min-width: 50em) {
+		.mention-card {
+			border-radius: 1.5rem;
+			height: 9.5rem;
+		}
+	}
 </style>
